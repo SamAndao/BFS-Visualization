@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,7 +11,56 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.App {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.matrix-grid {
+  display: grid;
+  
+  grid-gap: 6px;
+}
+
+.grid-item {
+  height: 25px;
+  width: 25px;
+  border-radius: 3px;
+  transition: .3s;
+
+}
+
+.grid-start {
+  background-color: green;
+}
+
+.grid-end {
+  background-color: red;
+}
+
+.grid-open {
+  background-color: lightblue;
+}
+
+.grid-travelled {
+  background-color: orange;
+}
+.grid-blocked {
+  background-color: orangered;
+}
+
+.grid-end-reached {
+  background-color: deeppink;
+}
+
+.grid-backtrack {
+  background-color:greenyellow;
+}
+
+.selection {
+  margin-top: 20px;
 }
