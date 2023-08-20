@@ -1,18 +1,18 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  const [matrix, setMatrix] = useState<(number | string)[][]>([]);
+  const [matrix, setMatrix] = useState<number[][]>([]);
   // eslint-disable-next-line
-  const [matrixWidth, setMatrixWidth] = useState<number>(45);
+  const [matrixWidth, setMatrixWidth] = useState<number>(15);
   // add 1 for offset
   // eslint-disable-next-line
-  const [matrixLength, setMatrixLength] = useState<number>(60);
+  const [matrixLength, setMatrixLength] = useState<number>(15);
   // add 1 for offset
-  const [selectedNodeType, setSelectedNodeType] = useState<number>(0);
+  const [selectedNodeType, setSelectedNodeType] = useState<number>(1);
   const [rendered, setRendered] = useState<boolean>(false);
 
-  const [startNode, setStartNode] = useState<number[]>([]);
-  const [endNode, setEndNode] = useState<number[]>([]);
+  const [startNode, setStartNode] = useState<number[]>([5, 5]);
+  const [endNode, setEndNode] = useState<number[]>([5, 11]);
   const [wallNodes, setWallNodes] = useState<Set<string>>(new Set());
 
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -126,6 +126,8 @@ function App() {
   const handleBacktracking = async (node: Node) => {
     let curr = node;
 
+    await new Promise((resolve) => setTimeout(resolve, 200)); // Delay
+
     while (curr.prev !== null) {
       if (curr.prev.prev === null) break;
 
@@ -137,7 +139,7 @@ function App() {
         newMatrix[y][x] = 6;
         return newMatrix;
       });
-      await new Promise((resolve) => setTimeout(resolve, 50)); // Delay
+      await new Promise((resolve) => setTimeout(resolve, 80)); // Delay
       curr = curr.prev;
     }
   };
@@ -159,7 +161,7 @@ function App() {
     const checkNodeTravelldedBlockedOOB = (node: Node) => {
       const a = node.y;
       const b = node.x;
-      if (a === 0 || b === 0 || a === matrixWidth || b === matrixLength)
+      if (a < 0 || b < 0 || a === matrixWidth || b === matrixLength)
         return false;
       if (isVisited.has(`${b} ${a}`)) return false;
       //needs more work
@@ -171,10 +173,13 @@ function App() {
     };
 
     const mainOperation = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 400)); // Delay
+
       while (nodeArray.length > 0 && !isTargetNodeFound) {
         const currNode = nodeArray.shift();
         if (currNode) {
           const { x, y } = currNode;
+          console.log(currNode);
 
           const nodeSides: Node[] = [
             new Node(x, y - 1, currNode),
@@ -182,7 +187,6 @@ function App() {
             new Node(x, y + 1, currNode),
             new Node(x - 1, y, currNode),
           ];
-
           for (const node of nodeSides) {
             if (checkNodeTravelldedBlockedOOB(node) && !isTargetNodeFound) {
               isVisited.add(`${node.x} ${node.y}`);
@@ -192,7 +196,7 @@ function App() {
                 newMatrix[node.y][node.x] = 4;
                 return newMatrix;
               });
-              await new Promise((resolve) => setTimeout(resolve, 5)); // Delay
+              await new Promise((resolve) => setTimeout(resolve, 25)); // Delay
             }
             if (node.x === endNode[1] && node.y === endNode[0]) {
               await handleBacktracking(node);
@@ -206,15 +210,11 @@ function App() {
   };
 
   const createMatrix = () => {
-    let matrixContent: (number | string)[][] = [];
+    let matrixContent: number[][] = [];
     for (let i = 0; i < matrixWidth; i++) {
-      const row: (number | string)[] = [];
+      const row: number[] = [];
       for (let j = 0; j < matrixLength; j++) {
-        if (i === 0) {
-          if (j === 0) row.push("‎ ");
-          else row.push(j.toString());
-        } else if (j === 0) row.push(i.toString());
-        else row.push(0);
+        row.push(0);
       }
       matrixContent.push(row);
     }
@@ -229,7 +229,7 @@ function App() {
         matrixContent[Number(x)][Number(y)] = 3;
       });
     }
-
+    console.log(matrixContent);
     return matrixContent;
   };
 
@@ -245,56 +245,114 @@ function App() {
     if (rendered) return;
     setRendered(true);
     setMatrix(createMatrix());
+    // eslint-disable-next-line
   }, []);
 
   return (
     <div className="App">
-      <h1>Main</h1>
-      {/* 20x20 grid */}
-      <div
-        className="matrix-grid"
-        style={{
-          gridTemplateRows: `repeat(${matrixWidth}, 30px)`,
-          gridTemplateColumns: `repeat(${matrixLength}, 30px)`,
-        }}
-      >
-        {matrix.flat().map((element: number | string, index: number) => {
-          return (
-            <div
-              key={index}
-              className={
-                typeof element === "number"
-                  ? `grid-item ${gridItemColorClass(element)}`
-                  : "grid-label"
-              }
-              onMouseDown={
-                !isRunning && typeof element === "number"
-                  ? () => {
-                      handleGridItemClick(index);
-                    }
-                  : undefined
-              }
-            >
-              {typeof element === "string" ? element : null}
+      <header className="header">
+        <h1>SEARCH ALGORITHM VIUALIZATION</h1>
+      </header>
+      <div className="main-content">
+        <div
+          className="matrix-grid"
+          style={{
+            gridTemplateRows: `repeat(${matrixWidth}, 20px)`,
+            gridTemplateColumns: `repeat(${matrixLength}, 20px)`,
+          }}
+        >
+          {matrix.flat().map((element: number, index: number) => {
+            return (
+              <div
+                key={index}
+                className={`grid-item ${gridItemColorClass(element)}`}
+                onMouseDown={
+                  !isRunning && typeof element === "number"
+                    ? () => {
+                        handleGridItemClick(index);
+                      }
+                    : undefined
+                }
+              ></div>
+            );
+          })}
+        </div>
+        <div className="controls">
+          <div className="set-node--container">
+            <div className="legends">
+              <h3 className="set-node--heading">Legend:</h3>
+              <ul className="legend-list">
+                <li className="legend-list-item">
+                  <div className="legend-origin legend-item"></div>
+                  <h4>origin</h4>
+                </li>
+                <li className="legend-list-item">
+                  <div className="legend-target legend-item"></div>
+                  <h4>target</h4>
+                </li>
+                <li className="legend-list-item">
+                  <div className="legend-blocked legend-item"></div>
+                  <h4>blocked</h4>
+                </li>
+                <li className="legend-list-item">
+                  <div className="legend-unvisited legend-item"></div>
+                  <h4>unvisited</h4>
+                </li>
+                <li className="legend-list-item">
+                  <div className="legend-visited legend-item"></div>
+                  <h4>visited</h4>
+                </li>
+                <li className="legend-list-item">
+                  <div className="legend-end-path legend-item"></div>
+                  <h4>found path</h4>
+                </li>
+              </ul>
             </div>
-          );
-        })}
-      </div>
-      <select
-        name="Set Node Type"
-        className="selection"
-        onChange={(e) => {
-          setSelectedNodeType(Number(e.target.value));
-        }}
-      >
-        <option value={0}>Open</option>
-        <option value={1}>Start</option>
-        <option value={2}>End</option>
-        <option value={3}>Blocked</option>
-      </select>
+            <h3 className="set-node--heading">Set node type:</h3>
+            <div className="set-node">
+              <div
+                className={`node-type ${
+                  selectedNodeType === 1 ? "selected" : null
+                }`}
+                onClick={() => setSelectedNodeType(1)}
+              >
+                origin
+              </div>
+              <div
+                className={`node-type ${
+                  selectedNodeType === 2 ? "selected" : null
+                }`}
+                onClick={() => setSelectedNodeType(2)}
+              >
+                target
+              </div>
+              <div
+                className={`node-type ${
+                  selectedNodeType === 3 ? "selected" : null
+                }`}
+                onClick={() => setSelectedNodeType(3)}
+              >
+                blocked
+              </div>
+              <div
+                className={`node-type ${
+                  selectedNodeType === 0 ? "selected" : null
+                }`}
+                onClick={() => setSelectedNodeType(0)}
+              >
+                unvisited
+              </div>
+            </div>
+          </div>
 
-      <button onClick={() => startSearchNode()}>Start search</button>
-      <button onClick={() => handleClear()}>Clear Grid</button>
+          <button className="btn btn-start" onClick={() => startSearchNode()}>
+            Start search
+          </button>
+          <button className="btn btn-clear" onClick={() => handleClear()}>
+            Clear grid
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
