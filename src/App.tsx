@@ -9,6 +9,7 @@ function App() {
   const [matrixLength, setMatrixLength] = useState<number>(15);
   // add 1 for offset
   const [selectedNodeType, setSelectedNodeType] = useState<number>(1);
+  const [searchType, setSearchType] = useState<number>(0);
   const [rendered, setRendered] = useState<boolean>(false);
 
   const [startNode, setStartNode] = useState<number[]>([5, 5]);
@@ -172,14 +173,13 @@ function App() {
       return true;
     };
 
-    const mainOperation = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 400)); // Delay
+    await new Promise((resolve) => setTimeout(resolve, 400)); // Delay
 
+    const BFSOperation = async () => {
       while (nodeArray.length > 0 && !isTargetNodeFound) {
         const currNode = nodeArray.shift();
         if (currNode) {
           const { x, y } = currNode;
-          console.log(currNode);
 
           const nodeSides: Node[] = [
             new Node(x, y - 1, currNode),
@@ -206,7 +206,45 @@ function App() {
       }
       setIsRunning(false);
     };
-    mainOperation();
+
+    const DFSOperation = async () => {
+      while (nodeArray.length > 0 && !isTargetNodeFound) {
+        const currNode = nodeArray.shift();
+        if (currNode) {
+          const { x, y } = currNode;
+
+          const nodeSides: Node[] = [
+            new Node(x, y - 1, currNode),
+            new Node(x + 1, y, currNode),
+            new Node(x, y + 1, currNode),
+            new Node(x - 1, y, currNode),
+          ];
+          for (const node of nodeSides) {
+            if (checkNodeTravelldedBlockedOOB(node) && !isTargetNodeFound) {
+              isVisited.add(`${node.x} ${node.y}`);
+              nodeArray.push(node);
+              setMatrix((prevMatrix) => {
+                const newMatrix = [...prevMatrix];
+                newMatrix[node.y][node.x] = 4;
+                return newMatrix;
+              });
+              await new Promise((resolve) => setTimeout(resolve, 25)); // Delay
+              break;
+            }
+            if (node.x === endNode[1] && node.y === endNode[0]) {
+              await handleBacktracking(node);
+            }
+          }
+        }
+      }
+      setIsRunning(false);
+    };
+
+    if (searchType === 0) {
+      BFSOperation();
+    } else if (searchType === 1) {
+      DFSOperation();
+    }
   };
 
   const createMatrix = () => {
@@ -229,7 +267,6 @@ function App() {
         matrixContent[Number(x)][Number(y)] = 3;
       });
     }
-    console.log(matrixContent);
     return matrixContent;
   };
 
@@ -248,9 +285,19 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  const scrollToElement = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth", // You can change this to 'auto' or 'instant' if needed
+        block: "start", // Scroll to the top of the element
+      });
+    }
+  };
+
   return (
     <div className="App">
-      <header className="header">
+      <header className="header" id="grid">
         <h1>SEARCH ALGORITHM VIUALIZATION</h1>
       </header>
       <div className="main-content">
@@ -278,36 +325,46 @@ function App() {
           })}
         </div>
         <div className="controls">
+          <div className="legends">
+            <h3 className="set-node--heading">Legend:</h3>
+            <ul className="legend-list">
+              <li className="legend-list-item">
+                <div className="legend-origin legend-item"></div>
+                <h4>origin</h4>
+              </li>
+              <li className="legend-list-item">
+                <div className="legend-target legend-item"></div>
+                <h4>target</h4>
+              </li>
+              <li className="legend-list-item">
+                <div className="legend-blocked legend-item"></div>
+                <h4>blocked</h4>
+              </li>
+              <li className="legend-list-item">
+                <div className="legend-unvisited legend-item"></div>
+                <h4>unvisited</h4>
+              </li>
+              <li className="legend-list-item">
+                <div className="legend-visited legend-item"></div>
+                <h4>visited</h4>
+              </li>
+              <li className="legend-list-item">
+                <div className="legend-end-path legend-item"></div>
+                <h4>found path</h4>
+              </li>
+            </ul>
+          </div>
+          <div className="set-search-type">
+            <h3 className="set-node--heading">Search type</h3>
+            <select
+              onChange={(e) => setSearchType(Number(e.target.value))}
+              className="set-search-type-selection"
+            >
+              <option value={0}>Breadth First Search</option>
+              <option value={1}>Depth First Search</option>
+            </select>
+          </div>
           <div className="set-node--container">
-            <div className="legends">
-              <h3 className="set-node--heading">Legend:</h3>
-              <ul className="legend-list">
-                <li className="legend-list-item">
-                  <div className="legend-origin legend-item"></div>
-                  <h4>origin</h4>
-                </li>
-                <li className="legend-list-item">
-                  <div className="legend-target legend-item"></div>
-                  <h4>target</h4>
-                </li>
-                <li className="legend-list-item">
-                  <div className="legend-blocked legend-item"></div>
-                  <h4>blocked</h4>
-                </li>
-                <li className="legend-list-item">
-                  <div className="legend-unvisited legend-item"></div>
-                  <h4>unvisited</h4>
-                </li>
-                <li className="legend-list-item">
-                  <div className="legend-visited legend-item"></div>
-                  <h4>visited</h4>
-                </li>
-                <li className="legend-list-item">
-                  <div className="legend-end-path legend-item"></div>
-                  <h4>found path</h4>
-                </li>
-              </ul>
-            </div>
             <h3 className="set-node--heading">Set node type:</h3>
             <div className="set-node">
               <div
@@ -345,9 +402,11 @@ function App() {
             </div>
           </div>
 
-          <button className="btn btn-start" onClick={() => startSearchNode()}>
-            Start search
-          </button>
+          <a href="#" onClick={() => scrollToElement("grid")}>
+            <button className="btn btn-start" onClick={() => startSearchNode()}>
+              Start search
+            </button>
+          </a>
           <button className="btn btn-clear" onClick={() => handleClear()}>
             Clear grid
           </button>
