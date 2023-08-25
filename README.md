@@ -11,10 +11,10 @@ This project provides visualizations for Breadth First Search (BFS) and Depth Fi
 
 ## How to Use
 
-1. Clone this repository or download the code.
-2. Open the `index.html` file in a web browser.
-3. Select the search algorithm (BFS or DFS).
-4. Choose the starting node and target node from the dropdowns.
+1. Open the demo in the link below.
+2. Select the search algorithm (BFS or DFS).
+3. Choose the starting node and target node from the dropdowns.
+4. You can also choose the blocked nodes in the graph.
 5. Click the "Start Search" button to see the algorithm in action.
 
 ## Demo
