@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/SamAndao/DFS-BFS-Visualization/static/css/main.c94e3052.css",
-    "main.js": "/SamAndao/DFS-BFS-Visualization/static/js/main.670e26cf.js",
-    "index.html": "/SamAndao/DFS-BFS-Visualization/index.html",
-    "main.c94e3052.css.map": "/SamAndao/DFS-BFS-Visualization/static/css/main.c94e3052.css.map",
-    "main.670e26cf.js.map": "/SamAndao/DFS-BFS-Visualization/static/js/main.670e26cf.js.map"
+    "main.css": "/DFS-BFS-Visualization/static/css/main.c94e3052.css",
+    "main.js": "/DFS-BFS-Visualization/static/js/main.670e26cf.js",
+    "index.html": "/DFS-BFS-Visualization/index.html",
+    "main.c94e3052.css.map": "/DFS-BFS-Visualization/static/css/main.c94e3052.css.map",
+    "main.670e26cf.js.map": "/DFS-BFS-Visualization/static/js/main.670e26cf.js.map"
   },
   "entrypoints": [
     "static/css/main.c94e3052.css",
