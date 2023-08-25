@@ -12,7 +12,7 @@ function App() {
   const [searchType, setSearchType] = useState<number>(0);
   const [rendered, setRendered] = useState<boolean>(false);
 
-  const [startNode, setStartNode] = useState<number[]>([5, 5]);
+  const [startNode, setStartNode] = useState<number[]>([5, 3]);
   const [endNode, setEndNode] = useState<number[]>([5, 11]);
   const [wallNodes, setWallNodes] = useState<Set<string>>(new Set());
 
@@ -402,11 +402,16 @@ function App() {
             </div>
           </div>
 
-          <a href="#" onClick={() => scrollToElement("grid")}>
-            <button className="btn btn-start" onClick={() => startSearchNode()}>
-              Start search
-            </button>
-          </a>
+          <button
+            className="btn btn-start"
+            onClick={() => {
+              scrollToElement("grid");
+              startSearchNode();
+            }}
+          >
+            Start search
+          </button>
+
           <button className="btn btn-clear" onClick={() => handleClear()}>
             Clear grid
           </button>
