@@ -19,7 +19,7 @@ This project provides visualizations for Breadth First Search (BFS) and Depth Fi
 
 ## Demo
 
-Check out the live demo [here](https://your-demo-url.com).
+Check out the live demo [here](https://samandao.github.io/DFS-BFS-Visualization/).
 
 ## Technologies Used
 
