@@ -301,9 +301,9 @@ function App() {
       <header className="header">
         <h1>SEARCH ALGORITHM VIUALIZATION</h1>
       </header>
+      <div id="grid"></div>
       <div className="main-content">
         <div
-          id="grid"
           className="matrix-grid"
           style={{
             gridTemplateRows: `repeat(${matrixWidth}, 20px)`,
