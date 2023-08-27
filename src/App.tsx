@@ -4,10 +4,8 @@ function App() {
   const [matrix, setMatrix] = useState<number[][]>([]);
   // eslint-disable-next-line
   const [matrixWidth, setMatrixWidth] = useState<number>(15);
-  // add 1 for offset
   // eslint-disable-next-line
   const [matrixLength, setMatrixLength] = useState<number>(15);
-  // add 1 for offset
   const [selectedNodeType, setSelectedNodeType] = useState<number>(1);
   const [searchType, setSearchType] = useState<number>(0);
   const [rendered, setRendered] = useState<boolean>(false);
@@ -102,6 +100,12 @@ function App() {
       }
     } else {
       newMatrix[a][b] = selectedNodeType;
+      if (startNode[0] === a && startNode[1] === b) {
+        setStartNode([]);
+      }
+      if (endNode[0] === a && endNode[1] === b) {
+        setEndNode([]);
+      }
       if (selectedNodeType === 1) setStartNode([a, b]);
       if (selectedNodeType === 2) setEndNode([a, b]);
       if (selectedNodeType === 3) {
@@ -110,8 +114,6 @@ function App() {
     }
     setMatrix(newMatrix);
   };
-
-  // bfs and dfs visualizer
 
   class Node {
     x: number;
@@ -277,7 +279,6 @@ function App() {
     setMatrix(createMatrix());
   };
 
-  // eslint-disable-next-line
   useEffect(() => {
     if (rendered) return;
     setRendered(true);
@@ -297,11 +298,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="header" id="grid">
+      <header className="header">
         <h1>SEARCH ALGORITHM VIUALIZATION</h1>
       </header>
       <div className="main-content">
         <div
+          id="grid"
           className="matrix-grid"
           style={{
             gridTemplateRows: `repeat(${matrixWidth}, 20px)`,
