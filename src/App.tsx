@@ -80,49 +80,72 @@ function App() {
     }
   }
 
+  
+
   class GridNode {
-    index: Number;
+    x: Number;
+    y: Number;
     prevNode: GridNode | null;
-    constructor(index: Number, prevNode?: GridNode) {
-      this.index = index;
+    constructor(x: Number, y: Number, prevNode?: GridNode) {
+      this.x = x;
+      this.y = y;
       this.prevNode = prevNode ?? null;
     }
+  }
+
+  function checkOOB(nodeIndex: Number[]) {
+    if (Number(nodeIndex[0]) < 0) return false;
+    if (Number(nodeIndex[0]) > boxColumns) return false;
+    if (Number(nodeIndex[1]) < 0) return false;
+    if (Number(nodeIndex[1]) > boxRows - 1) return false;
+    return true;
   }
 
   async function startSimulation() {
     clearTraveledGrid();
     setIsRunning(true);
 
-    const targetIndex = coordsToIndex(targetNode);
     const travelledSet = new Set();
     const operationStack:GridNode[] = [];
 
-    operationStack.push(new GridNode(coordsToIndex(startNode)));
+    operationStack.push(new GridNode(startNode[0], startNode[1]));
 
     let targetNodeReached = false;
 
     while (!targetNodeReached && operationStack.length > 0) {
       let currNode = operationStack.shift();
-      
-      if (currNode && currNode.index !== targetIndex) {
+      const nodeCoords = [Number(currNode?.x), Number(currNode?.y)];
+      const nodeIndex = coordsToIndex(nodeCoords);
 
+      if (currNode && (currNode?.x !== targetNode[0] || currNode?.y !== targetNode[1])) {
         
+        if (!travelledSet.has(nodeIndex) && grid[nodeIndex] !== 2 && checkOOB(nodeCoords)){
 
-
-
-      await new Promise((resolve) => setTimeout(resolve, 20));
+          travelledSet.add(nodeIndex);
+          operationStack.push(new GridNode(Number(currNode?.x), Number(currNode.y) + 1, currNode));
+          operationStack.push(new GridNode(Number(currNode?.x) + 1, Number(currNode.y), currNode));
+          operationStack.push(new GridNode(Number(currNode?.x) - 1, Number(currNode.y), currNode));
+          operationStack.push(new GridNode(Number(currNode?.x), Number(currNode.y) - 1, currNode));
+          setGrid((prevState) => {
+            const prevGrid = prevState.slice();
+            prevGrid[nodeIndex] = prevGrid[nodeIndex] !== 4 && prevGrid[nodeIndex] !== 3 ? 5 : prevGrid[nodeIndex];
+            return prevGrid;
+          })
+          await new Promise((resolve) => setTimeout(resolve, 1));
+        }
       } else {
-
+        console.log('trig')
         targetNodeReached = true;
         while (currNode?.prevNode !== null) {
           console.log('hi')
           setGrid((prevState) => {
+            const nodeIndex = coordsToIndex([Number(currNode?.x), Number(currNode?.y)])
             const prevGrid = prevState.slice();
-            prevGrid[Number(currNode?.index)] = prevGrid[Number(currNode?.index)] !== 4 && prevGrid[Number(currNode?.index)] !== 3 ? 6 : prevGrid[Number(currNode?.index)];
+            prevGrid[nodeIndex] = prevGrid[nodeIndex] !== 4 && prevGrid[nodeIndex] !== 3 ? 6 : prevGrid[nodeIndex];
             return prevGrid;
           })
           await new Promise((resolve) => setTimeout(resolve, 10));
-          currNode = currNode?.prevNode
+          currNode = currNode?.prevNode;
         }
         setIsRunning(false);
         
