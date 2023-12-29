@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [grid, setGrid] = useState<Array<Number>>([]);
-  const [storeGrid, setStoreGrid] = useState<Array<Number>>([]);
 
   const [isRunning, setIsRunning] = useState<Boolean> (false);
 
@@ -37,8 +36,25 @@ function App() {
     setType(value);
   }
 
+
+  function clearTraveledGrid() {
+    setGrid((prevState) => {
+      const prevGrid = prevState.slice();
+
+      const newGrid = prevGrid.map((item) => {
+        if (item === 5 || item === 6) {
+          return 1;
+        } else {
+          return item;
+        }
+      })
+      return newGrid;
+    })
+  }
+
   function handleBoxClick( itemIndex: Number) {
     if (!isRunning) {
+      clearTraveledGrid();
       setGrid((prevState) => {
         const prevGrid = prevState.slice();
         const changeNum:Number = type === "wall" ? 2 : type === "start" ? 3 : type === "target" ? 4 : 1;
@@ -67,6 +83,7 @@ function App() {
   }
 
   async function startSimulation() {
+    clearTraveledGrid();
     setIsRunning(true);
     const targetIndex = coordsToIndex(targetNode);
 
@@ -110,7 +127,7 @@ function App() {
             
           } 
         }
-      await new Promise((resolve) => setTimeout(resolve, .1));
+      await new Promise((resolve) => setTimeout(resolve, 20));
       } else {
         targetNodeReached = true;
         console.log('true')
