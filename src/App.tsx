@@ -106,33 +106,7 @@ function App() {
       
       if (currNode && currNode.index !== targetIndex) {
 
-        const indexNumber = Number(currNode.index);
-        setGrid((prevState) => {
-          const prevGrid = prevState.slice();
-          prevGrid[indexNumber] = prevGrid[indexNumber] !== 2 && prevGrid[indexNumber] !== 3 ? 5 : prevGrid[indexNumber];
-          return prevGrid;
-        })
-
-        const sideCells: Number[] = [indexNumber - boxColumns, indexNumber + 1, indexNumber + boxColumns, indexNumber - 1];
-        for (let i = 0; i < 4; i++ ) {
-          if(!travelledSet.has(sideCells[i]) && Number(sideCells[i]) < grid.length && Number(sideCells[i]) >= 0 && grid[Number(sideCells[i])] !== 2) {
-            if (i === 1) {
-              if (Number(sideCells[i]) % boxColumns !== 0) {
-                travelledSet.add(sideCells[i]);
-                operationStack.push(new GridNode(sideCells[i], currNode));
-              }
-            } else if (i ===3) {
-              if (Number(sideCells[i]) % boxColumns !== boxColumns - 1) {
-                travelledSet.add(sideCells[i]);
-                operationStack.push(new GridNode(sideCells[i], currNode));
-              }
-            } else {
-              travelledSet.add(sideCells[i]);
-              operationStack.push(new GridNode(sideCells[i], currNode));
-            }
-            
-          } 
-        }
+        
 
 
 
