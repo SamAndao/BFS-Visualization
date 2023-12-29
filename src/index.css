@@ -2,6 +2,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 html {
@@ -9,226 +10,59 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .App {
-  background-color: #dcdeec;
-  min-height: 700px;
+  /* background-color: #dcdeec; */
+  min-height: 100vh;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
 }
 /* #4093d7 */
 
-.header {
-  background-color: #fff;
-  height: 60px;
-  width: 100%;
+.gridContainer {
   display: flex;
-  align-items: center;
-  border-bottom: 2px solid #5b5b5b86;
-  padding: 15px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.301);
-  padding-left: 30px;
-  z-index: 1000;
-  position: fixed;
-  top: 0;
-}
-
-.header h1 {
-  color: black;
-  font-weight: 400;
-  font-size: 18px;
-}
-
-.main-content {
-
-  display: flex;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  height: calc(100vh - 70px);
+  margin-top: 70px;
+  align-content: flex-start;
+  /* background-color: red; */
   justify-content: center;
-  align-items: center;
-  
+  }
+
+.gridCellItem {
+  height: 23px;
+  width: 23px;
+  border: 1px solid black;
+  margin: 0;
+  transition: .25s;
 }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  height: 416px;
-  border-radius: 8px;
-  background-color: white;
-  margin-right: 30px;
-  padding: 20px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.301);
-  justify-content: space-around;
+.gridCell {
+  background-color: lightcoral;
 }
 
-h4 {
-  font-size: 14px;
-  font-weight: 400;
-}
-
-.set-search-type-selection {
-  width: 100%;
-  height: 30px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-
-}
-
-.legend-list {
-  list-style-type: none;
-  display: flex;
-  flex-wrap: wrap;
-}
-.legend-list-item {
-  display: flex;
-  align-items: center;
-  width: 47%;
-  margin-bottom: 10px;
-
-}
-
-.legend-item {
-  height: 20px;
-  width: 20px;
-  margin-right: 5px;
-  border-radius: 4px;
-}
-
-.legend-origin {
-  background-color: green;
-}
-.legend-target {
-  background-color: red;
-}
-.legend-blocked {
-  background-color: #612b12e8 ;
-}
-.legend-unvisited {
-  background-color: #c3c9d0ab;
-}
-.legend-end-path {
-  background-color: rgba(243, 171, 38, 0.797);
-}
-.legend-visited {
-  background-color: #3c9fea97
-}
-
-.btn {
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.btn-start {
-  background-color: green;
-}
-.btn-clear {
-  background-color: red;
-}
-
-.set-node--heading {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.set-node {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
-.node-type {
-  cursor: pointer;
-  background-color: #ffe396;
-  font-size: 14px;
-  padding: 5px;
-  transition: .5s;
-  border-radius: 5px;
-  width: 46%;
-  margin-bottom: 10px;
-  text-align: center;
-
-}
-
-.selected {
-  background-color: #ffc021;
-}
-
-
-.matrix-grid {
-  display: grid;
-  grid-gap: 4px;
-  padding: 30px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.301);
-  background-color: #fff;
-  border-radius: 8px;
-}
-
-.grid-item {
-  height: 20px;
-  width: 20px;
-  border-radius: 3px;
-  transition: .3s;
-  text-align: center;
-}
-
-
-.grid-start {
+.gridStart {
   background-color: green;
 }
 
-.grid-end {
+.gridTarget {
   background-color: red;
 }
 
-.grid-open {
-  background-color: #c3c9d0ab;
+.gridWall {
+  background-color: orange;
 }
 
-.grid-travelled {
-  background-color: #3c9fea97;
+.gridTravelled {
+  background-color: rgb(19, 146, 104);
 }
-.grid-blocked {
-  background-color: #612b12e8;
-}
-
-.grid-end-reached {
-  background-color: rgba(243, 171, 38, 0.797);
-}
-
-.selection {
-  margin-top: 20px;
-}
-
-@media only screen and (max-width: 800px) {
-  .main-content{
-    flex-direction: column;
-  }
-  .matrix-grid {
-    grid-gap: 2px;
-    padding: 10px;
-    margin-top: 40px;
-
-  }
-  .App {
-    min-height: 900px;
-  }
-  .controls {
-    width: 350px;
-    margin-right: 0;
-    margin-top: 20px;
-  }
+.gridBack {
+  background-color: midnightblue;
 }
