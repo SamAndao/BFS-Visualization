@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Interface } from "readline";
 
 function App() {
   const [grid, setGrid] = useState<Array<Number>>([]);
+  const [storeGrid, setStoreGrid] = useState<Array<Number>>([]);
+
+  const [isRunning, setIsRunning] = useState<Boolean> (false);
 
   const [startNode, setStartNode] = useState<Array<Number>>([10 , 5]);
   const [targetNode, setTargetNode] = useState<Array<Number>>([30, 5]);
@@ -36,21 +38,23 @@ function App() {
   }
 
   function handleBoxClick( itemIndex: Number) {
-    setGrid((prevState) => {
-      const prevGrid = prevState.slice();
-      const changeNum:Number = type === "wall" ? 2 : type === "start" ? 3 : type === "target" ? 4 : 1;
-
-      if (changeNum === 3) {
-        prevGrid[Number(coordsToIndex(startNode))] = 1;
-        setStartNode(indexToCoords(itemIndex));
-      } else if (changeNum === 4) {
-        prevGrid[Number(coordsToIndex(targetNode))] = 1;
-        setTargetNode(indexToCoords(itemIndex));
-      }
-
-      prevGrid[Number(itemIndex)] = changeNum === prevGrid[Number(itemIndex)] ? 1 : changeNum;
-      return prevGrid;
-    })
+    if (!isRunning) {
+      setGrid((prevState) => {
+        const prevGrid = prevState.slice();
+        const changeNum:Number = type === "wall" ? 2 : type === "start" ? 3 : type === "target" ? 4 : 1;
+  
+        if (changeNum === 3) {
+          prevGrid[Number(coordsToIndex(startNode))] = 1;
+          setStartNode(indexToCoords(itemIndex));
+        } else if (changeNum === 4) {
+          prevGrid[Number(coordsToIndex(targetNode))] = 1;
+          setTargetNode(indexToCoords(itemIndex));
+        }
+  
+        prevGrid[Number(itemIndex)] = changeNum === prevGrid[Number(itemIndex)] ? 1 : changeNum;
+        return prevGrid;
+      })
+    }
   }
 
   class GridNode {
@@ -63,7 +67,7 @@ function App() {
   }
 
   async function startSimulation() {
-
+    setIsRunning(true);
     const targetIndex = coordsToIndex(targetNode);
 
     const travelledSet = new Set();
@@ -78,24 +82,24 @@ function App() {
     while (!targetNodeReached && operationStack.length > 0) {
       let currNode = operationStack.shift();
       
-      if (currNode && currNode.index != targetIndex) {
+      if (currNode && currNode.index !== targetIndex) {
         const indexNumber = Number(currNode.index);
         setGrid((prevState) => {
           const prevGrid = prevState.slice();
-          prevGrid[indexNumber] = prevGrid[indexNumber] != 2 && prevGrid[indexNumber] != 3 ? 5 : prevGrid[indexNumber];
+          prevGrid[indexNumber] = prevGrid[indexNumber] !== 2 && prevGrid[indexNumber] !== 3 ? 5 : prevGrid[indexNumber];
           return prevGrid;
         })
 
         const sideCells: Number[] = [indexNumber - boxColumns, indexNumber + 1, indexNumber + boxColumns, indexNumber - 1];
         for (let i = 0; i < 4; i++ ) {
-          if(!travelledSet.has(sideCells[i]) && Number(sideCells[i]) < grid.length && Number(sideCells[i]) >= 0 && grid[Number(sideCells[i])] != 2) {
+          if(!travelledSet.has(sideCells[i]) && Number(sideCells[i]) < grid.length && Number(sideCells[i]) >= 0 && grid[Number(sideCells[i])] !== 2) {
             if (i === 1) {
-              if (Number(sideCells[i]) % boxColumns != 0) {
+              if (Number(sideCells[i]) % boxColumns !== 0) {
                 travelledSet.add(sideCells[i]);
                 operationStack.push(new GridNode(sideCells[i], currNode));
               }
             } else if (i ===3) {
-              if (Number(sideCells[i]) % boxColumns != boxColumns - 1) {
+              if (Number(sideCells[i]) % boxColumns !== boxColumns - 1) {
                 travelledSet.add(sideCells[i]);
                 operationStack.push(new GridNode(sideCells[i], currNode));
               }
@@ -112,16 +116,17 @@ function App() {
         console.log('true')
 
         if (currNode) {
-          while (currNode.prevNode != null) {
+          while (currNode.prevNode !== null) {
             console.log('hi')
             setGrid((prevState) => {
               const prevGrid = prevState.slice();
-              prevGrid[Number(currNode?.index)] = prevGrid[Number(currNode?.index)] != 4 && prevGrid[Number(currNode?.index)] != 3 ? 6 : prevGrid[Number(currNode?.index)];
+              prevGrid[Number(currNode?.index)] = prevGrid[Number(currNode?.index)] !== 4 && prevGrid[Number(currNode?.index)] !== 3 ? 6 : prevGrid[Number(currNode?.index)];
               return prevGrid;
             })
             await new Promise((resolve) => setTimeout(resolve, 10));
             currNode = currNode?.prevNode
           }
+          setIsRunning(false);
         }
       }
     }
