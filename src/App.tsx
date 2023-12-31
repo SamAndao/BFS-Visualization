@@ -61,6 +61,21 @@ function App() {
     });
   }
 
+  function clearWalls() {
+    setGrid((prevState) => {
+      const prevGrid = prevState.slice();
+
+      const newGrid = prevGrid.map((item) => {
+        if (item === 5 || item === 6 || item === 2) {
+          return 1;
+        } else {
+          return item;
+        }
+      });
+      return newGrid;
+    });
+  }
+
 
   function handleSearchChange(value: String) {
     if (isRunning) {
@@ -167,16 +182,75 @@ function App() {
     return true;
   }
 
+  function generateMaze() {
+    if (isRunning) return;
+    clearWalls();
+
+    const travelledNodes = new Set();
+    travelledNodes.clear();
+    const operationStack: GridNode[] = [];
+    operationStack.push(new GridNode(0,0));
+
+    let currNode;
+    while(operationStack.length !== 0) {
+      currNode = operationStack.pop();
+      const nX = Number(currNode?.x);
+      const nY = Number(currNode?.y);
+      
+      const nodeIndex = coordsToIndex([currNode?.x, currNode?.y]);
+      travelledNodes.add(nodeIndex);
+
+      let nodeSides = [[nX + 2, nY], [nX, nY + 2], [nX - 2, nY], [nX, nY - 2]];
+      
+      nodeSides = nodeSides.filter((side) => {
+        if (checkOOB(side) && !travelledNodes.has(coordsToIndex(side))) return true;
+        return false;
+      })
+      
+      if (nodeSides.length === 0) continue;
+
+      const randomSide = Math.floor(Math.random() * nodeSides.length);
+
+      for (let i = 0; i < nodeSides.length; i++) {
+        if (i !== randomSide) {
+          operationStack.push(new GridNode(nodeSides[i][0], nodeSides[i][1]));
+        }
+      }
+
+      const chosenSide = nodeSides[randomSide];
+
+      const xDiff = chosenSide[0] - nX;
+      const yDiff = chosenSide[1] - nY;
+
+      if (xDiff != 0) {
+        if (xDiff > 0) travelledNodes.add(coordsToIndex([nX + 1, nY]));
+        else travelledNodes.add(coordsToIndex([nX - 1, nY]));
+      }
+      else {
+        if (yDiff > 0) travelledNodes.add(coordsToIndex([nX, nY - 1]));
+        else travelledNodes.add(coordsToIndex([nX, nY + 1]));
+      }
+
+        operationStack.push(new GridNode(chosenSide[0], chosenSide[1]));
+      
+    }
+
+    setGrid((prevState) => {
+      const prevGrid = prevState.slice();
+      for (let i = 0; i < grid.length; i++) {
+        if (travelledNodes.has(i) && i !== coordsToIndex(startNode) && i !== coordsToIndex(targetNode)) prevGrid[i] = 2;
+      }
+
+      return prevGrid;
+    })
+  }
+
+
   async function startSimulation() {
-    if (isRunning) {
-      return;
-    }
-    if (!checkOOB(startNode)) {
-      return;
-    }
-    if (!checkOOB(targetNode)) {
-      return;
-    }
+    if (isRunning) return;
+    if (!checkOOB(startNode)) return;
+    if (!checkOOB(targetNode)) return;
+
     clearTraveledGrid();
     setIsRunning(true);
 
@@ -264,12 +338,9 @@ function App() {
   }
 
   function clearGrid() {
-
-    if (!isRunning) {
-      clearTraveledGrid();
-    }
-
+    if (!isRunning) clearTraveledGrid();
   }  
+
   function generateGrid() {
     const documentHeight = document.documentElement.clientHeight;
     const documentWidth = document.documentElement.clientWidth;
@@ -319,6 +390,12 @@ function App() {
       <div className="header">
         <img src="/DFS-BFS-Visualization/logo.png" className="logoImage" alt="logo"/>
         <h1 className="headerText">BFS DFS Visualization</h1>
+        <button
+          className="btn generateMazeButton"
+          onClick={() => {
+            generateMaze();
+          }}
+          >Generate Maze</button>
         <div className="colorLabels">
           <ul className="labelList">
             <li className="labelItem">
@@ -342,6 +419,7 @@ function App() {
               <h3 className="labelText">Path</h3>
             </li>
           </ul>
+          
         </div>
         <div className="controls">
           <div>

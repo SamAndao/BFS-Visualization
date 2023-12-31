@@ -75,6 +75,7 @@ body {
 
 .headerText {
   width: min-content;
+  margin-right: auto;
 }
 
 .header {
@@ -86,7 +87,6 @@ body {
 }
 
 .colorLabels {
-  margin-left: auto;
   margin-right: 20px
 }
 
@@ -129,8 +129,14 @@ body {
 
 .btn {
   padding: 2px;
+  font-weight: 700;
 }
 
 .clear-btn {
   margin-bottom: 4px;
+}
+
+.generateMazeButton {
+  margin-right: 20px;
+  font-size: 16px;
 }
