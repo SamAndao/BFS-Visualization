@@ -191,6 +191,9 @@ function App() {
     const operationStack: GridNode[] = [];
     operationStack.push(new GridNode(0,0));
 
+
+    
+
     let currNode;
     while(operationStack.length !== 0) {
       currNode = operationStack.pop();
@@ -198,7 +201,22 @@ function App() {
       const nY = Number(currNode?.y);
       
       const nodeIndex = coordsToIndex([currNode?.x, currNode?.y]);
+      
+
+      if (travelledNodes.has(coordsToIndex([nX, nY]))) {
+        continue;
+      }
       travelledNodes.add(nodeIndex);
+      if (currNode?.prevNode) {
+        if (nX - Number(currNode.prevNode.x) != 0) {
+          if (nX - Number(currNode.prevNode.x) > 0) travelledNodes.add(coordsToIndex([nX - 1, nY]));
+          else travelledNodes.add(coordsToIndex([nX + 1, nY]));
+        }
+        else if (nY - Number(currNode.prevNode.y) != 0){
+          if (nY - Number(currNode.prevNode.y) > 0) travelledNodes.add(coordsToIndex([nX, nY - 1]));
+          else travelledNodes.add(coordsToIndex([nX, nY + 1]));
+        }
+      }
 
       let nodeSides = [[nX + 2, nY], [nX, nY + 2], [nX - 2, nY], [nX, nY - 2]];
       
@@ -209,11 +227,12 @@ function App() {
       
       if (nodeSides.length === 0) continue;
 
+
       const randomSide = Math.floor(Math.random() * nodeSides.length);
 
       for (let i = 0; i < nodeSides.length; i++) {
         if (i !== randomSide) {
-          operationStack.push(new GridNode(nodeSides[i][0], nodeSides[i][1]));
+          operationStack.push(new GridNode(nodeSides[i][0], nodeSides[i][1], currNode));
         }
       }
 
@@ -227,18 +246,18 @@ function App() {
         else travelledNodes.add(coordsToIndex([nX - 1, nY]));
       }
       else {
-        if (yDiff > 0) travelledNodes.add(coordsToIndex([nX, nY - 1]));
-        else travelledNodes.add(coordsToIndex([nX, nY + 1]));
+        if (yDiff > 0) travelledNodes.add(coordsToIndex([nX, nY + 1]));
+        else travelledNodes.add(coordsToIndex([nX, nY - 1]));
       }
 
-        operationStack.push(new GridNode(chosenSide[0], chosenSide[1]));
+        operationStack.push(new GridNode(chosenSide[0], chosenSide[1], currNode));
       
     }
 
     setGrid((prevState) => {
       const prevGrid = prevState.slice();
       for (let i = 0; i < grid.length; i++) {
-        if (travelledNodes.has(i) && i !== coordsToIndex(startNode) && i !== coordsToIndex(targetNode)) prevGrid[i] = 2;
+        if (!travelledNodes.has(i) && i !== coordsToIndex(startNode) && i !== coordsToIndex(targetNode)) prevGrid[i] = 2;
       }
 
       return prevGrid;
